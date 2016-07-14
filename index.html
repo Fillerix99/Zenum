@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Zenum - LBRY Wallet</title>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+    <!-- All of the Node.js APIs are available in this renderer process. -->
+    Confirmed <script>Loading...</script>,
+    Unconfirmed <script>Loading...</script>,
+    and Electron <script>document.write(process.versions.electron)</script>.
+  </body>
+
+  <script>
+    // Requires and vars.
+    var notifier = require('./notifier.js')
+    var lbry = require('bitcoin')
+    var client = new lbry.Client({
+    host: '127.0.0.1',
+    port: 8080,
+    user: 'root',
+    pass: 'x',
+    timeout: 1000
+    });
+    var firstcheck = false;
+    var adresses = [];
+    //
+
+    //First start check!
+    notifier.notify('Wallet Started!');
+    client.cmd('listaccounts', function(err, response, resHeaders){
+      console.log('Response:' + JSON.stringify(response));
+      stringed = JSON.stringify(response);
+      if (stringed.indexOf('zenum_main') >= 0) {var firstcheck = true;}
+      else {
+        client.cmd('getnewaddress', 'zenum_main', function(err, response, resHeaders){
+          console.log('Did not find account, created zenum_main and got back the adress: ' + response);
+          var firstcheck = true;
+        });
+      };
+    });
+    //Fetch data live
+    function getadresses(){
+      if (firstcheck = true){
+      client.cmd('getaddressesbyaccount', 'zenum_main', function(err, response, resHeaders){
+        var adresses = response;
+        console.log('Adresses avaible:' + adresses);
+      });
+    }
+  }
+
+  setInterval(function() {
+    getadresses();
+  }, 1000);
+
+
+
+    //1. It should create an adress with an account named Zenum IF its not already there.
+    //
+
+    //
+  </script>
+</html>
